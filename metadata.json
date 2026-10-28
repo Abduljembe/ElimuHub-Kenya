@@ -1,0 +1,6 @@
+{
+  "name": "ElimuHub Kenya - National High School & University Learning Platform",
+  "description": "Kenya's premier comprehensive digital learning system for High School (KCSE/CBC) and University courses. Complete syllabi, practical lab guidelines, interactive simulations, exams with KNEC marking schemes, and academic progress tracking.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
