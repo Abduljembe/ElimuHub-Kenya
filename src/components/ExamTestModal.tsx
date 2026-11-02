@@ -24,6 +24,21 @@ export const ExamTestModal: React.FC<ExamTestModalProps> = ({
   const [isSubmitted, setIsSubmitted] = useState<boolean>(false);
   const [aiGradingFeedback, setAiGradingFeedback] = useState<Record<string, string>>({});
   const [isGradingWithAi, setIsGradingWithAi] = useState<boolean>(false);
+  const [tabSwitches, setTabSwitches] = useState<number>(0);
+  const [isExamLockActive, setIsExamLockActive] = useState<boolean>(true);
+  const [showScratchpad, setShowScratchpad] = useState<boolean>(false);
+  const [examScratchText, setExamScratchText] = useState<string>('');
+
+  useEffect(() => {
+    if (!isOpen || isSubmitted || !isExamLockActive) return;
+    const handleVisChange = () => {
+      if (document.hidden) {
+        setTabSwitches((prev) => prev + 1);
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisChange);
+    return () => document.removeEventListener('visibilitychange', handleVisChange);
+  }, [isOpen, isSubmitted, isExamLockActive]);
 
   useEffect(() => {
     if (!isOpen || isSubmitted) return;
@@ -101,7 +116,26 @@ export const ExamTestModal: React.FC<ExamTestModalProps> = ({
             <h2 className="text-base font-bold text-white mt-0.5">{exam.title}</h2>
           </div>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
+            {/* Anti-Cheat Tab Switch Badge */}
+            {tabSwitches > 0 && (
+              <span className="flex items-center gap-1 text-[11px] font-mono font-bold bg-rose-950 border border-rose-700 text-rose-300 px-2.5 py-1 rounded-lg animate-pulse">
+                ⚠️ {tabSwitches} Tab {tabSwitches === 1 ? 'Switch' : 'Switches'}
+              </span>
+            )}
+
+            {/* In-Exam Scratchpad Toggle */}
+            <button
+              onClick={() => setShowScratchpad(!showScratchpad)}
+              className={`text-xs px-2.5 py-1.5 rounded-lg border font-mono transition-colors ${
+                showScratchpad
+                  ? 'bg-emerald-950 border-emerald-600 text-emerald-300 font-bold'
+                  : 'bg-slate-950 border-slate-800 text-slate-400 hover:text-white'
+              }`}
+            >
+              📝 Rough Work
+            </button>
+
             {/* Countdown Timer */}
             <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-950 border border-slate-800 font-mono text-xs">
               <Clock className="w-3.5 h-3.5 text-cyan-400" />
@@ -118,6 +152,28 @@ export const ExamTestModal: React.FC<ExamTestModalProps> = ({
             </button>
           </div>
         </div>
+
+        {/* In-Exam Scratchpad Drawer (when active) */}
+        {showScratchpad && (
+          <div className="bg-slate-950 border-b border-slate-800 px-6 py-3 flex flex-col gap-1.5">
+            <div className="flex items-center justify-between text-xs text-slate-400 font-mono">
+              <span className="text-emerald-400 font-bold">Candidate Rough Work Pad (Private notes / scratch math)</span>
+              <button
+                onClick={() => setShowScratchpad(false)}
+                className="text-slate-400 hover:text-white text-[11px]"
+              >
+                Hide
+              </button>
+            </div>
+            <textarea
+              value={examScratchText}
+              onChange={(e) => setExamScratchText(e.target.value)}
+              rows={3}
+              placeholder="Jot down rough math steps or mnemonic points here..."
+              className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-slate-200 font-mono focus:outline-none focus:ring-1 focus:ring-emerald-500 resize-none"
+            />
+          </div>
+        )}
 
         {/* Question Area */}
         <div className="flex-1 overflow-y-auto p-6 space-y-6">

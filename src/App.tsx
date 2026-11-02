@@ -43,9 +43,21 @@ import { NationalSchoolsDirectory } from './components/NationalSchoolsDirectory'
 import { MathGraphVisualizer } from './components/MathGraphVisualizer';
 import { NationalMocksArchive } from './components/NationalMocksArchive';
 import { PrintableRevisionHub } from './components/PrintableRevisionHub';
+import { GeographyMapworkStudio } from './components/GeographyMapworkStudio';
+import { EnglishMasteryHub } from './components/EnglishMasteryHub';
+import { PhysicsPracticalGrapher } from './components/PhysicsPracticalGrapher';
+import { UniversityGPAPredictor } from './components/UniversityGPAPredictor';
+import { TVETAdmissionsPortal } from './components/TVETAdmissionsPortal';
+import { FocusStudyRoom } from './components/FocusStudyRoom';
 
 export type AppView =
   | 'curriculum'
+  | 'focus'
+  | 'mapwork'
+  | 'english'
+  | 'physicsgraph'
+  | 'unigpa'
+  | 'tvet'
   | 'setbooks'
   | 'kuccps'
   | 'hef'
@@ -162,11 +174,14 @@ export default function App() {
             e.preventDefault();
             setCurrentView('curriculum');
           }}
-          className="text-lg font-bold tracking-tight text-white whitespace-nowrap shrink-0 flex items-center gap-2 hover:opacity-90 transition-opacity"
+          className="text-lg font-bold tracking-tight text-white whitespace-nowrap shrink-0 flex items-center gap-2.5 hover:opacity-90 transition-opacity"
         >
-          <div className="w-7 h-7 rounded-lg bg-emerald-600 flex items-center justify-center text-white shadow-md">
-            <GraduationCap className="w-4 h-4" />
-          </div>
+          <img
+            src="/src/assets/images/elimuhub_app_icon_1793547709408.jpg"
+            alt="ElimuHub Kenya Logo"
+            className="w-8 h-8 rounded-xl object-cover shadow-lg border border-emerald-500/40 ring-1 ring-emerald-400/20"
+            referrerPolicy="no-referrer"
+          />
           <span>ElimuHub Kenya</span>
         </a>
 
@@ -222,11 +237,23 @@ export default function App() {
           </button>
         </nav>
 
-        {/* Zone 3: 1 Primary Action */}
-        <div className="flex items-center gap-3 shrink-0">
+        {/* Zone 3: Actions */}
+        <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+          <button
+            onClick={() => setCurrentView('focus')}
+            className={`px-3 py-2 text-xs font-semibold rounded-lg shadow transition-colors whitespace-nowrap shrink-0 flex items-center gap-1.5 border ${
+              currentView === 'focus'
+                ? 'bg-rose-600 border-rose-500 text-white font-bold'
+                : 'bg-slate-900 border-slate-700 text-emerald-400 hover:bg-slate-800'
+            }`}
+          >
+            <Clock className="w-3.5 h-3.5" />
+            <span>Focus &amp; Exam Room</span>
+          </button>
+
           <button
             onClick={() => setIsAITutorOpen(true)}
-            className="px-4 py-2 text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-500 rounded-lg shadow transition-colors whitespace-nowrap shrink-0 flex items-center gap-2"
+            className="px-3.5 py-2 text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-500 rounded-lg shadow transition-colors whitespace-nowrap shrink-0 flex items-center gap-1.5"
           >
             <Sparkles className="w-3.5 h-3.5" />
             AI Kenya Tutor
@@ -238,6 +265,12 @@ export default function App() {
       <div className="bg-slate-900/90 border-b border-slate-800 px-4 sm:px-6 py-2 overflow-x-auto flex items-center gap-2 text-xs">
         {[
           { id: 'curriculum', label: 'Form 1-4 & Degree Syllabi' },
+          { id: 'focus', label: '🧘 Zen Focus & Exam Lock Room' },
+          { id: 'mapwork', label: '🗺️ Mapwork & Fieldwork (312/1)' },
+          { id: 'english', label: '✍️ English Functional Writing & Oral (101/1)' },
+          { id: 'physicsgraph', label: '📈 Physics Practical Grapher (232/3)' },
+          { id: 'unigpa', label: '🎓 University GPA & Honours Predictor' },
+          { id: 'tvet', label: '🏥 KMTC & TVET Polytechnic Portal' },
           { id: 'hef', label: 'HEF & HELB Loan Band Calculator' },
           { id: 'schools', label: 'National Schools Directory & Cut-Offs' },
           { id: 'mocks', label: 'Kenya Top Mocks Archive' },
@@ -333,6 +366,36 @@ export default function App() {
               onStartExam={handleStartExam}
             />
           </div>
+        )}
+
+        {/* View: DISTRACTION-FREE ZEN FOCUS & EXAM LOCK ROOM */}
+        {currentView === 'focus' && (
+          <FocusStudyRoom onStartExam={handleStartExam} />
+        )}
+
+        {/* View: KCSE GEOGRAPHY 1:50,000 MAPWORK & FIELDWORK STUDIO */}
+        {currentView === 'mapwork' && (
+          <GeographyMapworkStudio />
+        )}
+
+        {/* View: KCSE ENGLISH FUNCTIONAL WRITING & ORAL SKILLS MASTER */}
+        {currentView === 'english' && (
+          <EnglishMasteryHub />
+        )}
+
+        {/* View: KCSE PHYSICS PAPER 3 PRACTICAL DATA GRAPHER & RUBRIC CHECKER */}
+        {currentView === 'physicsgraph' && (
+          <PhysicsPracticalGrapher />
+        )}
+
+        {/* View: UNIVERSITY CUMULATIVE GPA & HONOURS PREDICTOR */}
+        {currentView === 'unigpa' && (
+          <UniversityGPAPredictor />
+        )}
+
+        {/* View: KMTC & TVET NATIONAL POLYTECHNIC ADMISSIONS PORTAL */}
+        {currentView === 'tvet' && (
+          <TVETAdmissionsPortal />
         )}
 
         {/* View: KCSE SET BOOKS & LITERATURE GUIDE */}
@@ -618,7 +681,15 @@ export default function App() {
       {/* Footer */}
       <footer className="border-t border-slate-800/80 bg-slate-950 py-8 px-6 text-xs text-slate-500 text-center">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p>© 2026 ElimuHub Kenya. National Curriculum &amp; Examination Mastery Platform.</p>
+          <div className="flex items-center gap-3">
+            <img
+              src="/src/assets/images/elimuhub_app_icon_1793547709408.jpg"
+              alt="ElimuHub Kenya Icon"
+              className="w-6 h-6 rounded-lg object-cover border border-emerald-500/30"
+              referrerPolicy="no-referrer"
+            />
+            <p>© 2026 ElimuHub Kenya. National Curriculum &amp; Examination Mastery Platform.</p>
+          </div>
           <div className="flex items-center gap-4 text-[11px] text-slate-400">
             <span>KICD Aligned</span>
             <span>·</span>
