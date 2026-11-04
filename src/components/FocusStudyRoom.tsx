@@ -434,7 +434,7 @@ export const FocusStudyRoom: React.FC<FocusStudyRoomProps> = ({ onStartExam }) =
               Distraction-Free Focus &amp; Exam Hall Room
             </h1>
             <p className="text-slate-300 text-xs sm:text-sm mt-1 max-w-2xl leading-relaxed">
-              Designed to keep Kenyan students deeply immersed in learning and timed exams without leaving the app. Includes fullscreen immersion, anti-tab switch proctoring, Kenyan soundscapes, in-tab scientific calculator, and rough scratchpad.
+              Designed to keep Kenyan high school candidates deeply immersed in KCSE revision and timed exams without leaving the app. Includes fullscreen immersion, anti-tab switch proctoring, Kenyan soundscapes, in-tab scientific calculator, and rough scratchpad.
             </p>
           </div>
 

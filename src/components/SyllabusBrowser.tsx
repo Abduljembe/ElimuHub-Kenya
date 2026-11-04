@@ -20,8 +20,6 @@ import { TitrationSim } from './simulations/TitrationSim';
 import { CircuitSim } from './simulations/CircuitSim';
 import { OsmosisSim } from './simulations/OsmosisSim';
 import { AlgorithmSim } from './simulations/AlgorithmSim';
-import { ClinicalPatientSim } from './simulations/ClinicalPatientSim';
-import { EconomicsSim } from './simulations/EconomicsSim';
 
 interface SyllabusBrowserProps {
   courses: SubjectCourse[];
@@ -34,7 +32,7 @@ export const SyllabusBrowser: React.FC<SyllabusBrowserProps> = ({
   onOpenAITutor,
   onStartExam
 }) => {
-  const [selectedLevel, setSelectedLevel] = useState<'all' | 'highschool' | 'university'>('all');
+  const [selectedForm, setSelectedForm] = useState<'all' | 'Form 1' | 'Form 2' | 'Form 3' | 'Form 4'>('all');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCourseId, setSelectedCourseId] = useState<string>(courses[0]?.id || '');
@@ -44,13 +42,12 @@ export const SyllabusBrowser: React.FC<SyllabusBrowserProps> = ({
 
   // Filter courses
   const filteredCourses = courses.filter((c) => {
-    const matchesLevel = selectedLevel === 'all' || c.level === selectedLevel;
     const matchesCategory = selectedCategory === 'all' || c.category === selectedCategory;
     const matchesSearch =
       c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       c.code.toLowerCase().includes(searchQuery.toLowerCase()) ||
       c.description.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesLevel && matchesCategory && matchesSearch;
+    return matchesCategory && matchesSearch;
   });
 
   const activeCourse = courses.find((c) => c.id === selectedCourseId) || courses[0];
@@ -65,17 +62,13 @@ export const SyllabusBrowser: React.FC<SyllabusBrowserProps> = ({
         return <OsmosisSim />;
       case 'algorithms':
         return <AlgorithmSim />;
-      case 'clinical':
-        return <ClinicalPatientSim />;
-      case 'economics':
-        return <EconomicsSim />;
       default:
         return (
           <div className="bg-slate-900 border border-slate-800 rounded-xl p-8 text-center text-slate-400">
             <FlaskConical className="w-10 h-10 text-cyan-400 mx-auto mb-3" />
-            <h4 className="text-base font-semibold text-white">Interactive Sandbox Engine</h4>
+            <h4 className="text-base font-semibold text-white">Interactive High School STEM Sandbox</h4>
             <p className="text-xs text-slate-400 max-w-md mx-auto mt-1">
-              Select one of the interactive laboratory simulations (Chemistry Titration, Physics Ohm's Law, Biology Osmosis, Computer Science Algorithms, Medicine ECG, or Economics Equilibrium).
+              Select one of the KCSE laboratory simulations: Chemistry Volumetric Titration, Physics DC Circuit Simulator, Biology Cell Osmosis, or Computer Studies Algorithm Sorting.
             </p>
           </div>
         );
@@ -84,40 +77,26 @@ export const SyllabusBrowser: React.FC<SyllabusBrowserProps> = ({
 
   return (
     <div className="space-y-6 text-slate-100">
-      {/* Search and Level Filter Bar */}
+      {/* Search and Form Filter Bar */}
       <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-lg flex flex-wrap items-center justify-between gap-4">
-        {/* Level Tabs */}
+        {/* Form Tabs */}
         <div className="flex items-center gap-1 bg-slate-950 p-1 rounded-xl border border-slate-800 text-xs">
-          <button
-            onClick={() => setSelectedLevel('all')}
-            className={`px-3.5 py-1.5 rounded-lg font-medium transition-colors ${
-              selectedLevel === 'all'
-                ? 'bg-emerald-600 text-white shadow-sm'
-                : 'text-slate-400 hover:text-white'
-            }`}
-          >
-            All National Syllabi
-          </button>
-          <button
-            onClick={() => setSelectedLevel('highschool')}
-            className={`px-3.5 py-1.5 rounded-lg font-medium transition-colors ${
-              selectedLevel === 'highschool'
-                ? 'bg-emerald-600 text-white shadow-sm'
-                : 'text-slate-400 hover:text-white'
-            }`}
-          >
-            KCSE High School (KICD)
-          </button>
-          <button
-            onClick={() => setSelectedLevel('university')}
-            className={`px-3.5 py-1.5 rounded-lg font-medium transition-colors ${
-              selectedLevel === 'university'
-                ? 'bg-emerald-600 text-white shadow-sm'
-                : 'text-slate-400 hover:text-white'
-            }`}
-          >
-            University Degree Programmes (KUCCPS / CUE)
-          </button>
+          {(['all', 'Form 1', 'Form 2', 'Form 3', 'Form 4'] as const).map((form) => (
+            <button
+              key={form}
+              onClick={() => {
+                setSelectedForm(form);
+                setSelectedFormOrYear(form);
+              }}
+              className={`px-3 py-1.5 rounded-lg font-medium transition-colors ${
+                selectedForm === form
+                  ? 'bg-emerald-600 text-white shadow-sm font-semibold'
+                  : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              {form === 'all' ? 'All Form 1–4 Syllabi' : form}
+            </button>
+          ))}
         </div>
 
         {/* Search Input */}
@@ -127,35 +106,30 @@ export const SyllabusBrowser: React.FC<SyllabusBrowserProps> = ({
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search subjects, topics, or lab practicals..."
+            placeholder="Search KCSE subjects, Form 1-4 topics, or Paper 3 practicals..."
             className="w-full bg-slate-950 border border-slate-800 rounded-xl pl-9 pr-4 py-2 text-xs text-white focus:outline-none focus:border-emerald-500"
           />
         </div>
       </div>
 
-      {/* Category Pills Bar */}
+      {/* High School Category Pills Bar */}
       <div className="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs">
-        <span className="text-slate-500 text-[11px] uppercase tracking-wider font-mono mr-1 shrink-0">Field:</span>
+        <span className="text-slate-500 text-[11px] uppercase tracking-wider font-mono mr-1 shrink-0">Department:</span>
         {[
-          { id: 'all', label: 'All Fields' },
-          { id: 'Sciences', label: 'Sciences' },
+          { id: 'all', label: 'All Subjects (Form 1–4)' },
+          { id: 'Sciences', label: 'Sciences (Bio, Chem, Phys)' },
           { id: 'Mathematics', label: 'Mathematics' },
-          { id: 'Humanities', label: 'Humanities' },
-          { id: 'Languages', label: 'Languages' },
-          { id: 'Applied & Technical', label: 'Applied & Agribusiness' },
-          { id: 'Medical Sciences', label: 'Medicine & Health' },
-          { id: 'Engineering', label: 'Engineering & Built Env' },
-          { id: 'Computing & Tech', label: 'Computing, Data & AI' },
-          { id: 'Law & Governance', label: 'Law & Governance' },
-          { id: 'Economics & Commerce', label: 'Economics & Commerce' },
-          { id: 'Education & Pedagogy', label: 'Education & Pedagogy' },
+          { id: 'Humanities', label: 'Humanities (History, Geography)' },
+          { id: 'Computing & Tech', label: 'Computer Studies (451)' },
+          { id: 'Applied & Technical', label: 'Agriculture & Applied (443)' },
+          { id: 'Business Studies', label: 'Business Studies (565)' },
         ].map((cat) => (
           <button
             key={cat.id}
             onClick={() => setSelectedCategory(cat.id)}
             className={`px-3 py-1.5 rounded-lg whitespace-nowrap shrink-0 transition-colors font-medium border ${
               selectedCategory === cat.id
-                ? 'bg-slate-800 border-emerald-500/80 text-emerald-400 shadow-sm'
+                ? 'bg-slate-800 border-emerald-500/80 text-emerald-400 shadow-sm font-semibold'
                 : 'bg-slate-900/60 border-slate-800 text-slate-400 hover:text-slate-200 hover:border-slate-700'
             }`}
           >

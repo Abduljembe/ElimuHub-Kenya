@@ -273,16 +273,14 @@ export const AITutorModal: React.FC<AITutorModalProps> = ({
                 <option value="High School (KCSE Form 2)">High School (KCSE Form 2)</option>
                 <option value="High School (KCSE Form 3)">High School (KCSE Form 3)</option>
                 <option value="High School (KCSE Form 4)">High School (KCSE Form 4)</option>
-                <option value="Senior School CBC Grade 10-12">Senior School CBC Grade 10-12</option>
-                <option value="University Undergraduate Year 1">University Undergraduate Year 1</option>
-                <option value="University Undergraduate Year 2">University Undergraduate Year 2</option>
-                <option value="University Undergraduate Year 3">University Undergraduate Year 3</option>
-                <option value="University Final Year 4/5">University Final Year 4/5</option>
+                <option value="Senior School CBC Grade 10">Senior School CBC Grade 10</option>
+                <option value="Senior School CBC Grade 11">Senior School CBC Grade 11</option>
+                <option value="Senior School CBC Grade 12">Senior School CBC Grade 12</option>
               </select>
             </div>
           </div>
 
-          {/* Quick Kenyan Curriculum Presets */}
+          {/* Quick Kenyan High School Curriculum Presets */}
           <div className="flex flex-wrap items-center gap-1.5 text-xs">
             <span className="text-slate-500 text-[11px] mr-1">Quick Presets:</span>
             <button
@@ -292,22 +290,28 @@ export const AITutorModal: React.FC<AITutorModalProps> = ({
               KCSE Chemistry Titration
             </button>
             <button
-              onClick={() => setPromptPreset('Medicine', 'Acute STEMI Management', 'University Undergraduate Year 3', 'Walk me through the first 15 minutes of an acute chest pain patient at Kenyatta National Hospital.')}
+              onClick={() => setPromptPreset('Biology', 'Genetics & Dihybrid Crosses', 'High School (KCSE Form 4)', 'Explain Mendel\'s Law of Independent Assortment and show a 9:3:3:1 phenotypic ratio cross.')}
               className="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded text-[11px] transition-colors border border-slate-700"
             >
-              MBChB STEMI Resuscitation
+              KCSE Biology Genetics
             </button>
             <button
-              onClick={() => setPromptPreset('Law', 'Article 24 Bill of Rights Limitations', 'University Undergraduate Year 2', 'How does the High Court of Kenya apply the proportionality test to limit fundamental rights?')}
+              onClick={() => setPromptPreset('Geography', 'Topographical Mapwork (312/1)', 'High School (KCSE Form 4)', 'How do I calculate gradient and determine intervisibility on Survey of Kenya 1:50,000 maps?')}
               className="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded text-[11px] transition-colors border border-slate-700"
             >
-              LLB Constitutional Law
+              KCSE Geography Mapwork
             </button>
             <button
               onClick={() => setPromptPreset('Physics', 'Ohm\'s Law & Internal Resistance', 'High School (KCSE Form 3)', 'Explain how to find lost volts and plot V against I for a dry cell.')}
               className="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded text-[11px] transition-colors border border-slate-700"
             >
               KCSE Physics Lost Volts
+            </button>
+            <button
+              onClick={() => setPromptPreset('Mathematics', 'Linear Programming', 'High School (KCSE Form 4)', 'Explain the KNEC rule for shading unwanted regions and using the search line for maximum profit.')}
+              className="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded text-[11px] transition-colors border border-slate-700"
+            >
+              KCSE Math Linear Programming
             </button>
           </div>
 

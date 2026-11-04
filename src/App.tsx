@@ -25,11 +25,8 @@ import { TitrationSim } from './components/simulations/TitrationSim';
 import { CircuitSim } from './components/simulations/CircuitSim';
 import { OsmosisSim } from './components/simulations/OsmosisSim';
 import { AlgorithmSim } from './components/simulations/AlgorithmSim';
-import { ClinicalPatientSim } from './components/simulations/ClinicalPatientSim';
-import { EconomicsSim } from './components/simulations/EconomicsSim';
 import { ExamPaper } from './types/curriculum';
 import { SetBooksGuide } from './components/SetBooksGuide';
-import { KuccpsExplorer } from './components/KuccpsExplorer';
 import { QuizEngine } from './components/QuizEngine';
 import { ScienceReferenceHub } from './components/ScienceReferenceHub';
 import { FlashcardsDeck } from './components/FlashcardsDeck';
@@ -38,7 +35,6 @@ import { FourFigureTables } from './components/FourFigureTables';
 import { KiswahiliCompanion } from './components/KiswahiliCompanion';
 import { KnecProjectTracker } from './components/KnecProjectTracker';
 import { AudioVoiceReader } from './components/AudioVoiceReader';
-import { HefLoanCalculator } from './components/HefLoanCalculator';
 import { NationalSchoolsDirectory } from './components/NationalSchoolsDirectory';
 import { MathGraphVisualizer } from './components/MathGraphVisualizer';
 import { NationalMocksArchive } from './components/NationalMocksArchive';
@@ -46,21 +42,17 @@ import { PrintableRevisionHub } from './components/PrintableRevisionHub';
 import { GeographyMapworkStudio } from './components/GeographyMapworkStudio';
 import { EnglishMasteryHub } from './components/EnglishMasteryHub';
 import { PhysicsPracticalGrapher } from './components/PhysicsPracticalGrapher';
-import { UniversityGPAPredictor } from './components/UniversityGPAPredictor';
-import { TVETAdmissionsPortal } from './components/TVETAdmissionsPortal';
 import { FocusStudyRoom } from './components/FocusStudyRoom';
+import { MadeFamiliarRevision } from './components/MadeFamiliarRevision';
 
 export type AppView =
   | 'curriculum'
+  | 'madefamiliar'
   | 'focus'
   | 'mapwork'
   | 'english'
   | 'physicsgraph'
-  | 'unigpa'
-  | 'tvet'
   | 'setbooks'
-  | 'kuccps'
-  | 'hef'
   | 'schools'
   | 'mocks'
   | 'mathgraph'
@@ -116,7 +108,7 @@ export default function App() {
         ? JSON.parse(saved)
         : {
             'hs-chemistry': 'Remember: Methyl Orange transitions from Yellow (base) to Orange at equivalence, then Pink in excess acid.',
-            'uni-medicine': 'KNH Clinical Protocol: Door-to-balloon time < 90 mins for primary PCI in STEMI.'
+            'hs-physics': 'Lenz’s Law: The direction of the induced current is always such as to oppose the change producing it.'
           };
     } catch {
       return {};
@@ -193,7 +185,15 @@ export default function App() {
               currentView === 'curriculum' ? 'text-emerald-400 font-semibold' : 'hover:text-white'
             }`}
           >
-            Curriculum
+            Form 1–4 Syllabi
+          </button>
+          <button
+            onClick={() => setCurrentView('madefamiliar')}
+            className={`whitespace-nowrap shrink-0 transition-colors ${
+              currentView === 'madefamiliar' ? 'text-emerald-400 font-semibold' : 'hover:text-white'
+            }`}
+          >
+            Made Familiar
           </button>
           <button
             onClick={() => setCurrentView('setbooks')}
@@ -204,12 +204,12 @@ export default function App() {
             Set Books
           </button>
           <button
-            onClick={() => setCurrentView('kuccps')}
+            onClick={() => setCurrentView('mapwork')}
             className={`whitespace-nowrap shrink-0 transition-colors ${
-              currentView === 'kuccps' ? 'text-emerald-400 font-semibold' : 'hover:text-white'
+              currentView === 'mapwork' ? 'text-emerald-400 font-semibold' : 'hover:text-white'
             }`}
           >
-            KUCCPS
+            Mapwork (312/1)
           </button>
           <button
             onClick={() => setCurrentView('quiz')}
@@ -225,7 +225,7 @@ export default function App() {
               currentView === 'simulations' ? 'text-emerald-400 font-semibold' : 'hover:text-white'
             }`}
           >
-            Simulations
+            STEM Labs
           </button>
           <button
             onClick={() => setCurrentView('progress')}
@@ -233,7 +233,7 @@ export default function App() {
               currentView === 'progress' ? 'text-emerald-400 font-semibold' : 'hover:text-white'
             }`}
           >
-            Grade Tracker
+            KCSE Tracker
           </button>
         </nav>
 
@@ -261,23 +261,20 @@ export default function App() {
         </div>
       </header>
 
-      {/* National Academic Modules Quick Strip */}
+      {/* National High School Academic Modules Quick Strip */}
       <div className="bg-slate-900/90 border-b border-slate-800 px-4 sm:px-6 py-2 overflow-x-auto flex items-center gap-2 text-xs">
         {[
-          { id: 'curriculum', label: 'Form 1-4 & Degree Syllabi' },
+          { id: 'curriculum', label: 'Form 1-4 KCSE Syllabi' },
+          { id: 'madefamiliar', label: '📖 KCSE Made Familiar (All 11 Subjects)' },
           { id: 'focus', label: '🧘 Zen Focus & Exam Lock Room' },
           { id: 'mapwork', label: '🗺️ Mapwork & Fieldwork (312/1)' },
           { id: 'english', label: '✍️ English Functional Writing & Oral (101/1)' },
           { id: 'physicsgraph', label: '📈 Physics Practical Grapher (232/3)' },
-          { id: 'unigpa', label: '🎓 University GPA & Honours Predictor' },
-          { id: 'tvet', label: '🏥 KMTC & TVET Polytechnic Portal' },
-          { id: 'hef', label: 'HEF & HELB Loan Band Calculator' },
+          { id: 'setbooks', label: 'KCSE Set Books Master Guide' },
           { id: 'schools', label: 'National Schools Directory & Cut-Offs' },
-          { id: 'mocks', label: 'Kenya Top Mocks Archive' },
+          { id: 'mocks', label: 'Kenya Top High School Mocks Archive' },
           { id: 'mathgraph', label: 'Math Graph & LP Visualizer' },
           { id: 'printables', label: 'A4 Printable Revision Sheets' },
-          { id: 'setbooks', label: 'KCSE Set Books Guide' },
-          { id: 'kuccps', label: 'KUCCPS University Explorer' },
           { id: 'cbc', label: 'CBC Senior School Advisor' },
           { id: 'tables', label: 'Digital 4-Figure Tables' },
           { id: 'kiswahili', label: 'Kiswahili Sarufi & Fasihi' },
@@ -286,10 +283,10 @@ export default function App() {
           { id: 'quiz', label: 'Rapid Practice Quiz' },
           { id: 'flashcards', label: 'Mastery Flashcards' },
           { id: 'science', label: 'Periodic Table & Constants' },
-          { id: 'simulations', label: '6 Live Simulators' },
+          { id: 'simulations', label: '4 High School STEM Simulators' },
           { id: 'practicals', label: 'Lab Practicals (Paper 3)' },
           { id: 'exams', label: 'KNEC Past Papers & Tests' },
-          { id: 'progress', label: 'Mean Grade & Tracker' },
+          { id: 'progress', label: 'KCSE Mean Grade Tracker' },
         ].map((item) => (
           <button
             key={item.id}
@@ -317,15 +314,15 @@ export default function App() {
                 <div className="lg:col-span-7 p-8 flex flex-col justify-between z-10">
                   <div>
                     <div className="flex items-center gap-2 text-xs text-emerald-400 font-mono uppercase tracking-wider mb-2">
-                      <span>Kenya National Digital Education System</span>
+                      <span>Kenya National Secondary Education System</span>
                       <span aria-hidden="true">·</span>
-                      <span>KICD, KNEC &amp; CUE Standards</span>
+                      <span>KICD, KNEC &amp; CBC Senior School Standards</span>
                     </div>
                     <h1 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight leading-tight max-w-xl text-balance">
-                      The Complete National Learning System for Kenya High Schools &amp; Universities
+                      The Complete National Learning Platform for Kenya High Schools (Form 1 to Form 4)
                     </h1>
                     <p className="text-slate-300 text-xs sm:text-sm mt-3 leading-relaxed max-w-lg">
-                      Master every course offered in Kenya. In-depth theory notes, KNEC laboratory practical manuals, interactive virtual simulations, past exams with official mark schemes, and KUCCPS cluster points tracking.
+                      Master every KCSE high school subject. In-depth KICD theory notes, KNEC laboratory practical manuals, interactive virtual STEM simulations, past exams with official mark schemes, and 12-point mean grade tracking.
                     </p>
                   </div>
 
@@ -333,7 +330,7 @@ export default function App() {
                   <div className="grid grid-cols-3 gap-4 pt-6 mt-6 border-t border-slate-800/80 text-xs font-mono">
                     <div>
                       <span className="text-slate-400 block text-[10px]">Curriculum Coverage</span>
-                      <strong className="text-emerald-400 text-base">100% Full Syllabi</strong>
+                      <strong className="text-emerald-400 text-base">100% Form 1–4 Syllabi</strong>
                     </div>
                     <div>
                       <span className="text-slate-400 block text-[10px]">Laboratory Practicals</span>
@@ -341,7 +338,7 @@ export default function App() {
                     </div>
                     <div>
                       <span className="text-slate-400 block text-[10px]">Interactive Labs</span>
-                      <strong className="text-amber-400 text-base">6 Live Simulators</strong>
+                      <strong className="text-amber-400 text-base">4 Live Simulators</strong>
                     </div>
                   </div>
                 </div>
@@ -373,6 +370,11 @@ export default function App() {
           <FocusStudyRoom onStartExam={handleStartExam} />
         )}
 
+        {/* View: KCSE MADE FAMILIAR REVISION SERIES (ALL 11 SUBJECTS) */}
+        {currentView === 'madefamiliar' && (
+          <MadeFamiliarRevision onAskAI={openTutorWithContext} />
+        )}
+
         {/* View: KCSE GEOGRAPHY 1:50,000 MAPWORK & FIELDWORK STUDIO */}
         {currentView === 'mapwork' && (
           <GeographyMapworkStudio />
@@ -388,29 +390,9 @@ export default function App() {
           <PhysicsPracticalGrapher />
         )}
 
-        {/* View: UNIVERSITY CUMULATIVE GPA & HONOURS PREDICTOR */}
-        {currentView === 'unigpa' && (
-          <UniversityGPAPredictor />
-        )}
-
-        {/* View: KMTC & TVET NATIONAL POLYTECHNIC ADMISSIONS PORTAL */}
-        {currentView === 'tvet' && (
-          <TVETAdmissionsPortal />
-        )}
-
         {/* View: KCSE SET BOOKS & LITERATURE GUIDE */}
         {currentView === 'setbooks' && (
           <SetBooksGuide onAskAI={openTutorWithContext} />
-        )}
-
-        {/* View: KUCCPS UNIVERSITY DEGREE EXPLORER & CUT-OFFS */}
-        {currentView === 'kuccps' && (
-          <KuccpsExplorer />
-        )}
-
-        {/* View: HEF & HELB UNIVERSITY LOAN BAND CALCULATOR */}
-        {currentView === 'hef' && (
-          <HefLoanCalculator />
         )}
 
         {/* View: TOP KENYAN NATIONAL SCHOOLS DIRECTORY */}
@@ -540,11 +522,11 @@ export default function App() {
           <div className="space-y-8">
             <div className="border-b border-slate-800 pb-4">
               <span className="text-xs font-mono uppercase tracking-wider text-emerald-400">
-                Interactive STEM &amp; Social Science Lab
+                Interactive High School STEM Lab
               </span>
               <h2 className="text-2xl font-bold text-white mt-1">Live Scientific &amp; Conceptual Sandboxes</h2>
               <p className="text-xs text-slate-400 mt-1 max-w-2xl">
-                Real-time interactive canvas and physical engines designed for Kenyan secondary school experiments and university technical laboratories.
+                Real-time interactive canvas and physical engines designed for Kenyan secondary school experiments (KCSE Paper 3).
               </p>
             </div>
 
@@ -552,7 +534,7 @@ export default function App() {
             <div className="space-y-2">
               <div className="flex items-center gap-2 text-xs font-semibold text-emerald-400 font-mono uppercase">
                 <FlaskConical className="w-4 h-4" />
-                <span>Simulation 01 · Analytical Chemistry</span>
+                <span>Simulation 01 · KCSE Form 3 Analytical Chemistry (Titration)</span>
               </div>
               <TitrationSim />
             </div>
@@ -561,7 +543,7 @@ export default function App() {
             <div className="space-y-2">
               <div className="flex items-center gap-2 text-xs font-semibold text-cyan-400 font-mono uppercase">
                 <Activity className="w-4 h-4" />
-                <span>Simulation 02 · Physics &amp; Electrical Engineering</span>
+                <span>Simulation 02 · KCSE Form 2 &amp; 4 Physics (DC Circuit &amp; Ohm's Law)</span>
               </div>
               <CircuitSim />
             </div>
@@ -570,7 +552,7 @@ export default function App() {
             <div className="space-y-2">
               <div className="flex items-center gap-2 text-xs font-semibold text-emerald-400 font-mono uppercase">
                 <BookOpen className="w-4 h-4" />
-                <span>Simulation 03 · Biological Microscopy</span>
+                <span>Simulation 03 · KCSE Form 1 Biology (Osmosis &amp; Cell Physiology)</span>
               </div>
               <OsmosisSim />
             </div>
@@ -579,27 +561,9 @@ export default function App() {
             <div className="space-y-2">
               <div className="flex items-center gap-2 text-xs font-semibold text-purple-400 font-mono uppercase">
                 <Layers className="w-4 h-4" />
-                <span>Simulation 04 · Computer Science Data Structures &amp; Algorithms</span>
+                <span>Simulation 04 · KCSE Form 4 Computer Studies (Data Structures &amp; Algorithms)</span>
               </div>
               <AlgorithmSim />
-            </div>
-
-            {/* Sim 5: Medicine Clinical Resuscitation */}
-            <div className="space-y-2">
-              <div className="flex items-center gap-2 text-xs font-semibold text-rose-400 font-mono uppercase">
-                <ShieldCheck className="w-4 h-4" />
-                <span>Simulation 05 · Medical OSCE Resuscitation &amp; ECG Monitoring</span>
-              </div>
-              <ClinicalPatientSim />
-            </div>
-
-            {/* Sim 6: Economics Equilibrium & Tax */}
-            <div className="space-y-2">
-              <div className="flex items-center gap-2 text-xs font-semibold text-amber-400 font-mono uppercase">
-                <Calculator className="w-4 h-4" />
-                <span>Simulation 06 · Macroeconomics &amp; KRA Tax Incidence</span>
-              </div>
-              <EconomicsSim />
             </div>
           </div>
         )}
@@ -609,11 +573,11 @@ export default function App() {
           <div className="space-y-6">
             <div className="border-b border-slate-800 pb-4">
               <span className="text-xs font-mono uppercase tracking-wider text-emerald-400">
-                National Examination Council &amp; University Finals
+                Kenya National Examinations Council (KNEC)
               </span>
-              <h2 className="text-2xl font-bold text-white mt-1">Timed Examination Simulation Center</h2>
+              <h2 className="text-2xl font-bold text-white mt-1">KCSE Examination Simulation Center</h2>
               <p className="text-xs text-slate-400 mt-1 max-w-2xl">
-                Practice full KCSE Paper 1, 2, 3 exams and University semester exams under real exam conditions with instant KNEC marking schemes and AI examiner script grading.
+                Practice full KCSE Paper 1, 2, and 3 past exams under real timed conditions with instant KNEC marking schemes and AI examiner script grading.
               </p>
             </div>
 
@@ -651,13 +615,13 @@ export default function App() {
           <div className="space-y-8">
             <div className="border-b border-slate-800 pb-4">
               <span className="text-xs font-mono uppercase tracking-wider text-emerald-400">
-                Student Performance &amp; Syllabus Progress
+                KCSE Candidate Performance &amp; Syllabus Progress
               </span>
               <h2 className="text-2xl font-bold text-white mt-1">
-                Official Kenya Grading Tracker &amp; Study Timetable
+                Official KCSE Mean Grade Tracker &amp; Study Timetable
               </h2>
               <p className="text-xs text-slate-400 mt-1 max-w-2xl">
-                Calculate your official KCSE Mean Grade, evaluate KUCCPS University Degree admission cluster points, track university GPA, and plan your weekly study schedule.
+                Calculate your official KCSE 7-Subject Mean Grade and Aggregates on the 12-point scale, track topic completion from Form 1 to Form 4, and plan your weekly study schedule.
               </p>
             </div>
 
@@ -688,14 +652,14 @@ export default function App() {
               className="w-6 h-6 rounded-lg object-cover border border-emerald-500/30"
               referrerPolicy="no-referrer"
             />
-            <p>© 2026 ElimuHub Kenya. National Curriculum &amp; Examination Mastery Platform.</p>
+            <p>© 2026 ElimuHub Kenya. National Secondary School &amp; KCSE Mastery Platform.</p>
           </div>
           <div className="flex items-center gap-4 text-[11px] text-slate-400">
             <span>KICD Aligned</span>
             <span>·</span>
             <span>KNEC KCSE Standards</span>
             <span>·</span>
-            <span>CUE University Degree Framework</span>
+            <span>CBC Senior School Framework</span>
           </div>
         </div>
       </footer>
