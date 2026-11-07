@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import {
   BookOpen,
   Award,
@@ -38,12 +38,30 @@ import { lookupLogarithm, lookupTrigRatio } from '../utils/fourFigureMath';
 
 interface MadeFamiliarRevisionProps {
   onAskAI?: (subject: string, topic: string, level: string) => void;
+  currentForm?: string;
+  onSelectForm?: (form: 'all' | 'Form 1' | 'Form 2' | 'Form 3' | 'Form 4') => void;
 }
 
-export const MadeFamiliarRevision: React.FC<MadeFamiliarRevisionProps> = ({ onAskAI }) => {
+export const MadeFamiliarRevision: React.FC<MadeFamiliarRevisionProps> = ({ onAskAI, currentForm, onSelectForm }) => {
   const [selectedSubjectId, setSelectedSubjectId] = useState<string>('mf-math');
-  const [selectedForm, setSelectedForm] = useState<'all' | 'Form 1' | 'Form 2' | 'Form 3' | 'Form 4'>('all');
+  const [selectedForm, setSelectedForm] = useState<'all' | 'Form 1' | 'Form 2' | 'Form 3' | 'Form 4'>(() => {
+    if (currentForm && ['Form 1', 'Form 2', 'Form 3', 'Form 4'].includes(currentForm)) {
+      return currentForm as any;
+    }
+    return 'all';
+  });
   const [searchQuery, setSearchQuery] = useState<string>('');
+
+  useEffect(() => {
+    if (currentForm) {
+      if (currentForm === 'KCSE Candidate' || currentForm === 'all') {
+        setSelectedForm('all');
+      } else if (['Form 1', 'Form 2', 'Form 3', 'Form 4'].includes(currentForm)) {
+        setSelectedForm(currentForm as any);
+      }
+      setCurrentPage(1);
+    }
+  }, [currentForm]);
   
   // Practice Scope: 'topic' | 'all-bank' | 'drill'
   const [practiceScope, setPracticeScope] = useState<'topic' | 'all-bank' | 'drill'>('topic');
@@ -433,10 +451,75 @@ export const MadeFamiliarRevision: React.FC<MadeFamiliarRevisionProps> = ({ onAs
         </div>
       </div>
 
+      {/* Mobile Topic & Scope Ribbon (screens < lg) */}
+      <div className="lg:hidden bg-slate-900 border border-slate-800 rounded-2xl p-3 shadow-lg space-y-2.5">
+        <div className="flex items-center justify-between gap-2 text-xs">
+          <div className="flex items-center gap-1.5 font-bold text-white">
+            <BookOpen className="w-4 h-4 text-emerald-400" />
+            <span>{activeSubject.name} Topics</span>
+          </div>
+          <div className="flex items-center gap-1 bg-slate-950 p-0.5 rounded-lg border border-slate-800 text-[10px]">
+            <button
+              onClick={() => {
+                setPracticeScope('topic');
+                setCurrentPage(1);
+              }}
+              className={`px-2.5 py-1 rounded-md font-semibold min-h-[36px] flex items-center ${
+                practiceScope === 'topic' ? 'bg-emerald-600 text-white' : 'text-slate-400'
+              }`}
+            >
+              By Topic
+            </button>
+            <button
+              onClick={() => {
+                setPracticeScope('all-bank');
+                setCurrentPage(1);
+              }}
+              className={`px-2.5 py-1 rounded-md font-semibold min-h-[36px] flex items-center ${
+                practiceScope === 'all-bank' ? 'bg-emerald-600 text-white' : 'text-slate-400'
+              }`}
+            >
+              All Qs ({subjectFullBank.length})
+            </button>
+          </div>
+        </div>
+
+        {/* Mobile Horizontal Topics Carousel */}
+        {practiceScope === 'topic' && (
+          <div className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar">
+            {filteredTopics.map((topic) => {
+              const isSelected = selectedTopicId === topic.id;
+              return (
+                <button
+                  key={topic.id}
+                  onClick={() => {
+                    setSelectedTopicId(topic.id);
+                    setActiveTab('questions');
+                    setCurrentPage(1);
+                  }}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap shrink-0 transition-all flex items-center gap-1.5 border min-h-[40px] ${
+                    isSelected
+                      ? 'bg-emerald-600 text-white border-emerald-500 shadow-sm ring-1 ring-emerald-400/30'
+                      : 'bg-slate-950 text-slate-300 border-slate-800 hover:border-slate-700'
+                  }`}
+                >
+                  <span>{topic.title}</span>
+                  <span className={`text-[10px] font-mono px-1 py-0.2 rounded ${
+                    isSelected ? 'bg-emerald-700 text-emerald-100' : 'bg-slate-900 text-slate-400'
+                  }`}>
+                    {topic.questions.length} Qs
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        )}
+      </div>
+
       {/* Main Studio Grid: Left Sidebar + Right Question Content Area */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        {/* Left Column: Practice Scope & Topics */}
-        <div className="lg:col-span-4 bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl space-y-4">
+        {/* Left Column: Practice Scope & Topics (Desktop only, mobile uses the top horizontal ribbon) */}
+        <div className="hidden lg:block lg:col-span-4 bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl space-y-4">
           <div className="flex items-center justify-between border-b border-slate-800 pb-3">
             <div>
               <h2 className="text-sm font-bold text-white uppercase tracking-wider font-mono">
@@ -591,8 +674,8 @@ export const MadeFamiliarRevision: React.FC<MadeFamiliarRevisionProps> = ({ onAs
         </div>
 
         {/* Right Column: Question Content, Pagination & Answer Chooser */}
-        <div className="lg:col-span-8 space-y-6">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-6">
+        <div className="lg:col-span-8 space-y-5 sm:space-y-6">
+          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-6 shadow-xl space-y-5 sm:space-y-6">
             {/* Header: Topic or Bank Title + Mode Switcher */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-4">
               <div>

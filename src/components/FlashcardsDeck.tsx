@@ -13,11 +13,34 @@ import {
 } from 'lucide-react';
 import { FLASHCARD_DECKS, Flashcard } from '../data/flashcardsData';
 
-export const FlashcardsDeck: React.FC = () => {
+interface FlashcardsDeckProps {
+  currentForm?: string;
+}
+
+export const FlashcardsDeck: React.FC<FlashcardsDeckProps> = ({ currentForm }) => {
   const [selectedSubject, setSelectedSubject] = useState<string>('all');
+  const [selectedForm, setSelectedForm] = useState<string>(() => {
+    if (currentForm && ['Form 1', 'Form 2', 'Form 3', 'Form 4'].includes(currentForm)) {
+      return currentForm;
+    }
+    return 'all';
+  });
   const [currentIndex, setCurrentIndex] = useState<number>(0);
   const [isFlipped, setIsFlipped] = useState<boolean>(false);
   const [showHint, setShowHint] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (currentForm) {
+      if (currentForm === 'KCSE Candidate' || currentForm === 'all') {
+        setSelectedForm('all');
+      } else if (['Form 1', 'Form 2', 'Form 3', 'Form 4'].includes(currentForm)) {
+        setSelectedForm(currentForm);
+      }
+      setCurrentIndex(0);
+      setIsFlipped(false);
+      setShowHint(false);
+    }
+  }, [currentForm]);
 
   // Mastered card IDs persisted in localStorage
   const [masteredIds, setMasteredIds] = useState<string[]>(() => {
@@ -38,11 +61,13 @@ export const FlashcardsDeck: React.FC = () => {
   }, [masteredIds]);
 
   const subjects = ['all', 'Chemistry', 'Biology', 'Physics', 'Mathematics', 'Medicine (MBChB)', 'Law (LLB)'];
+  const forms = ['all', 'Form 1', 'Form 2', 'Form 3', 'Form 4'];
 
-  const filteredCards =
-    selectedSubject === 'all'
-      ? FLASHCARD_DECKS
-      : FLASHCARD_DECKS.filter((c) => c.subject.includes(selectedSubject));
+  const filteredCards = FLASHCARD_DECKS.filter((c) => {
+    const matchSubj = selectedSubject === 'all' || c.subject.includes(selectedSubject);
+    const matchForm = selectedForm === 'all' || c.formOrYear === selectedForm;
+    return matchSubj && matchForm;
+  });
 
   const currentCard: Flashcard = filteredCards[currentIndex] || filteredCards[0];
   const isMastered = masteredIds.includes(currentCard.id);
@@ -136,6 +161,29 @@ export const FlashcardsDeck: React.FC = () => {
               }`}
             >
               {sub === 'all' ? 'All Subjects' : sub}
+            </button>
+          ))}
+        </div>
+
+        {/* Form Level Filter Bar */}
+        <div className="flex items-center gap-2 mt-2 pt-2 border-t border-slate-800/60 overflow-x-auto text-xs font-medium">
+          <span className="text-slate-500 uppercase font-mono mr-1">Form:</span>
+          {forms.map((f) => (
+            <button
+              key={f}
+              onClick={() => {
+                setSelectedForm(f);
+                setCurrentIndex(0);
+                setIsFlipped(false);
+                setShowHint(false);
+              }}
+              className={`px-2.5 py-1 rounded-lg whitespace-nowrap transition-colors border text-[11px] ${
+                selectedForm === f
+                  ? 'bg-emerald-600 border-emerald-500 text-white font-bold shadow-xs'
+                  : 'bg-slate-900 border-slate-800 text-slate-400 hover:text-white'
+              }`}
+            >
+              {f === 'all' ? 'All Forms' : f}
             </button>
           ))}
         </div>

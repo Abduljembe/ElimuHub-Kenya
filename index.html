@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>ElimuHub Kenya - National High School Learning Platform (KCSE Form 1–4 &amp; CBC Senior School)</title>
     <meta name="description" content="Kenya's premier high school digital learning system for KCSE Form 1–4 &amp; CBC Senior School. Complete KICD syllabi, practical lab guidelines, interactive STEM simulations, past exams with KNEC marking schemes, and 12-point mean grade tracking." />
     <meta property="og:title" content="ElimuHub Kenya - National High School Learning Platform (KCSE Form 1–4 &amp; CBC Senior School)" />
@@ -18,6 +18,17 @@
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Plus+Jakarta+Sans:ital,wght@0,300..800;1,300..800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   </head>
   <body class="bg-slate-50 text-slate-900 font-sans antialiased selection:bg-emerald-500/20 selection:text-emerald-900">
+    <script>
+      // Gracefully prevent unhandled rejection popups from Vite HMR websocket in sandboxed preview iframe
+      window.addEventListener('unhandledrejection', function(event) {
+        if (event && event.reason && (
+          (event.reason.message && event.reason.message.includes('WebSocket')) ||
+          String(event.reason).includes('WebSocket')
+        )) {
+          event.preventDefault();
+        }
+      });
+    </script>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

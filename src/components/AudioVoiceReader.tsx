@@ -111,70 +111,69 @@ export const AudioVoiceReader: React.FC<AudioVoiceReaderProps> = ({
   return (
     <div className="space-y-6">
       {/* Header Banner */}
-      <div className="bg-gradient-to-r from-teal-950/80 via-slate-900 to-slate-900 border border-teal-500/30 rounded-2xl p-6 shadow-xl">
-        <div className="flex flex-wrap items-center justify-between gap-4">
+      <div className="bg-gradient-to-r from-teal-950/80 via-slate-900 to-slate-900 border border-teal-500/30 rounded-2xl p-4 sm:p-6 shadow-xl">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
-            <div className="flex items-center gap-2 text-xs font-mono uppercase text-teal-400">
-              <span>Multi-Sensory Audio Revision</span>
-              <span>·</span>
-              <span>Hands-Free Speech Engine</span>
+            <div className="flex items-center gap-2 text-[10px] sm:text-xs font-mono uppercase text-teal-400">
+              <Headphones className="w-3.5 h-3.5" />
+              <span>Voice Reader</span>
             </div>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-white mt-1">
-              Audio Text-to-Speech (TTS) Voice Study Reader
+            <h2 className="text-xl sm:text-2xl font-extrabold text-white mt-1">
+              🎧 Voice Reader &amp; Audio Notes
             </h2>
-            <p className="text-xs sm:text-sm text-slate-300 mt-2 max-w-2xl leading-relaxed">
-              Listen to curriculum lessons, set book chapters, and exam summaries hands-free while commuting or revising. Powered by in-browser speech synthesis.
+            <p className="text-xs sm:text-sm text-slate-300 mt-1 max-w-xl leading-relaxed">
+              Listen to lesson notes and set books hands-free. Perfect for audio revision.
             </p>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 self-start sm:self-auto">
             {isPlaying && (
-              <div className="flex items-center gap-1 px-3 py-1.5 rounded-full bg-teal-950 border border-teal-500/40 text-teal-300 text-xs font-mono animate-pulse">
-                <Volume2 className="w-4 h-4 text-teal-400" />
-                <span>Reading Aloud...</span>
+              <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-teal-950 border border-teal-500/40 text-teal-300 text-xs font-mono animate-pulse">
+                <Volume2 className="w-3.5 h-3.5 text-teal-400" />
+                <span>Reading...</span>
               </div>
             )}
           </div>
         </div>
 
         {/* Audio Player Controls Bar */}
-        <div className="flex flex-wrap items-center justify-between gap-4 mt-6 pt-4 border-t border-slate-800/80">
+        <div className="flex flex-wrap items-center justify-between gap-3 mt-4 pt-3.5 border-t border-slate-800/80">
           <div className="flex items-center gap-2">
             {!isPlaying ? (
               <button
                 onClick={handlePlay}
-                className="px-5 py-2 rounded-xl bg-teal-600 hover:bg-teal-500 text-white text-xs font-semibold flex items-center gap-2 shadow-lg transition-colors"
+                className="px-4 py-2 rounded-xl bg-teal-600 hover:bg-teal-500 text-white text-xs font-semibold flex items-center gap-1.5 shadow-lg transition-colors cursor-pointer"
               >
-                <Play className="w-4 h-4 fill-current" />
-                <span>{isPaused ? 'Resume Audio' : 'Play Lesson'}</span>
+                <Play className="w-3.5 h-3.5 fill-current" />
+                <span>{isPaused ? 'Resume' : 'Play Audio'}</span>
               </button>
             ) : (
               <button
                 onClick={handlePause}
-                className="px-5 py-2 rounded-xl bg-amber-600 hover:bg-amber-500 text-white text-xs font-semibold flex items-center gap-2 shadow-lg transition-colors"
+                className="px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-500 text-white text-xs font-semibold flex items-center gap-1.5 shadow-lg transition-colors cursor-pointer"
               >
-                <Pause className="w-4 h-4" />
-                <span>Pause Audio</span>
+                <Pause className="w-3.5 h-3.5" />
+                <span>Pause</span>
               </button>
             )}
 
             <button
               onClick={handleStop}
-              className="p-2 rounded-xl bg-slate-950 border border-slate-800 hover:bg-slate-800 text-slate-400 hover:text-white transition-colors"
-              title="Stop Speech"
+              className="p-2 rounded-xl bg-slate-950 border border-slate-800 hover:bg-slate-800 text-slate-400 hover:text-white transition-colors cursor-pointer"
+              title="Stop"
             >
               <VolumeX className="w-4 h-4" />
             </button>
           </div>
 
           {/* Speed Selector */}
-          <div className="flex items-center gap-2 text-xs font-mono">
-            <span className="text-slate-400">Narration Speed:</span>
+          <div className="flex items-center gap-1.5 text-xs font-mono">
+            <span className="text-slate-400 text-[11px]">Speed:</span>
             {[0.8, 1.0, 1.2, 1.5].map((speed) => (
               <button
                 key={speed}
                 onClick={() => setSpeechRate(speed)}
-                className={`px-2.5 py-1 rounded-lg border transition-colors ${
+                className={`px-2 py-1 rounded-lg border text-xs transition-colors cursor-pointer ${
                   speechRate === speed
                     ? 'bg-teal-950 border-teal-500 text-teal-300 font-bold'
                     : 'bg-slate-950 border-slate-800 text-slate-400 hover:text-white'

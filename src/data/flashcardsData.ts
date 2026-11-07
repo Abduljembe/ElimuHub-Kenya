@@ -57,6 +57,30 @@ export const FLASHCARD_DECKS: Flashcard[] = [
     tags: ['Qualitative Analysis', 'Cations', 'Paper 3']
   },
 
+  // CHEMISTRY FORM 1
+  {
+    id: 'fc-chem-f1-1',
+    subject: 'Chemistry',
+    formOrYear: 'Form 1',
+    topic: 'Introduction to Chemistry & Bunsen Burner',
+    frontPrompt: 'State three key differences between a Luminous and a Non-Luminous flame of a Bunsen Burner.',
+    backAnswer: '1. Luminous: Air hole is closed; unsteady yellow wavy flame; produces soot due to unburnt carbon; relatively cool.\n2. Non-Luminous: Air hole is fully open; steady pale-blue roaring flame; no soot produced (complete combustion); much hotter with distinct zones.',
+    hint: 'For laboratory heating, always use the non-luminous flame.',
+    knecTrap: 'Never use a luminous flame for heating in practical exams because soot insulates the apparatus and obscures observations.',
+    tags: ['Form 1', 'Bunsen Burner', 'Flames']
+  },
+  {
+    id: 'fc-chem-f1-2',
+    subject: 'Chemistry',
+    formOrYear: 'Form 1',
+    topic: 'Simple Classification of Substances',
+    frontPrompt: 'Describe how you would separate a dry mixture of sodium chloride (table salt) and iodine crystals.',
+    backAnswer: 'Heat the mixture gently in an evaporating dish covered with an inverted glass funnel. Iodine sublimes directly from solid to purple vapor and condenses as shiny purple crystals on the cool funnel walls. Sodium chloride does not sublime and remains in the dish.',
+    hint: 'Sublimation is a direct solid-to-gas transition without passing through the liquid phase.',
+    knecTrap: 'Do NOT dissolve in water first! Sublimation separates dry iodine directly and cleanly.',
+    tags: ['Form 1', 'Sublimation', 'Separation Techniques']
+  },
+
   // BIOLOGY
   {
     id: 'fc-bio-1',
@@ -126,8 +150,53 @@ export const FLASHCARD_DECKS: Flashcard[] = [
     knecTrap: 'Work function is measured in Joules (or eV), while threshold frequency is measured in Hertz (Hz).',
     tags: ['Modern Physics', 'Quantum', 'Einstein']
   },
+  // PHYSICS FORM 1
+  {
+    id: 'fc-phy-f1-1',
+    subject: 'Physics',
+    formOrYear: 'Form 1',
+    topic: 'Measurement I & Density',
+    frontPrompt: 'Define Density and state its SI unit. A wooden cube of side 5 cm has a mass of 100 g. Calculate its density in kg/m³.',
+    backAnswer: 'Density is mass per unit volume (ρ = m/V). SI unit is kg/m³.\nVolume = 5 × 5 × 5 = 125 cm³.\nDensity = 100 g / 125 cm³ = 0.8 g/cm³.\nIn kg/m³: 0.8 × 1,000 = 800 kg/m³.',
+    hint: '1 g/cm³ = 1,000 kg/m³.',
+    knecTrap: 'Be careful with units: never leave density in g/cm³ if the question asks for SI units (kg/m³).',
+    tags: ['Form 1', 'Density', 'Measurement']
+  },
+  {
+    id: 'fc-phy-f1-2',
+    subject: 'Physics',
+    formOrYear: 'Form 1',
+    topic: 'Pressure',
+    frontPrompt: 'State Pascal’s Principle of transmission of pressure in fluids and give two everyday applications.',
+    backAnswer: 'Pascal’s Principle states that pressure applied to an enclosed fluid is transmitted equally and undiminished in all directions throughout the fluid.\nApplications: 1. Hydraulic car brakes 2. Hydraulic car jack / press.',
+    hint: 'F₁/A₁ = F₂/A₂.',
+    knecTrap: 'The fluid MUST be enclosed and incompressible (liquids, not gases).',
+    tags: ['Form 1', 'Pressure', 'Hydraulics']
+  },
 
   // MATHEMATICS
+  {
+    id: 'fc-math-f1-1',
+    subject: 'Mathematics',
+    formOrYear: 'Form 1',
+    topic: 'Numbers & Divisibility',
+    frontPrompt: 'State the Divisibility Test for 11 and verify whether 84,953 is divisible by 11.',
+    backAnswer: 'A number is divisible by 11 if the difference between the sum of digits in odd positions and sum of digits in even positions is 0 or a multiple of 11.\nFor 84,953: Odd places (8 + 9 + 3) = 20. Even places (4 + 5) = 9.\nDifference = 20 - 9 = 11. Since 11 is a multiple of 11, 84,953 IS divisible by 11.',
+    hint: 'Alternative signs test: 8 - 4 + 9 - 5 + 3 = 11.',
+    knecTrap: 'Count positions from either left or right consistently; do not mix.',
+    tags: ['Form 1', 'Divisibility', 'Integers']
+  },
+  {
+    id: 'fc-math-f1-2',
+    subject: 'Mathematics',
+    formOrYear: 'Form 1',
+    topic: 'Angles & Plane Geometry',
+    frontPrompt: 'Distinguish between Complementary and Supplementary angles. If an angle measures (2x + 10)° and its supplement is (3x + 20)°, find the value of x.',
+    backAnswer: 'Complementary angles add up to 90°. Supplementary angles add up to 180°.\n(2x + 10) + (3x + 20) = 180° ⇒ 5x + 30 = 180° ⇒ 5x = 150° ⇒ x = 30°.\nThe angles are 70° and 110°.',
+    hint: 'C comes before S, 90 comes before 180.',
+    knecTrap: 'Complementary = 90°; Supplementary = 180°. Do not swap them!',
+    tags: ['Form 1', 'Angles', 'Geometry']
+  },
   {
     id: 'fc-math-1',
     subject: 'Mathematics',

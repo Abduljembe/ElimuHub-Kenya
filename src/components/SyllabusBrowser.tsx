@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   BookOpen,
   FlaskConical,
@@ -13,7 +13,9 @@ import {
   Play,
   Filter,
   Layers,
-  ListOrdered
+  ListOrdered,
+  Volume2,
+  VolumeX
 } from 'lucide-react';
 import { SubjectCourse, TopicUnit, PracticalExperiment, ExamPaper } from '../types/curriculum';
 import { TitrationSim } from './simulations/TitrationSim';
@@ -25,20 +27,63 @@ interface SyllabusBrowserProps {
   courses: SubjectCourse[];
   onOpenAITutor: (subject: string, topic: string, level: string) => void;
   onStartExam: (exam: ExamPaper, subjectName: string) => void;
+  currentForm?: string;
+  onSelectForm?: (form: 'all' | 'Form 1' | 'Form 2' | 'Form 3' | 'Form 4') => void;
 }
 
 export const SyllabusBrowser: React.FC<SyllabusBrowserProps> = ({
   courses,
   onOpenAITutor,
-  onStartExam
+  onStartExam,
+  currentForm,
+  onSelectForm
 }) => {
-  const [selectedForm, setSelectedForm] = useState<'all' | 'Form 1' | 'Form 2' | 'Form 3' | 'Form 4'>('all');
+  const [selectedForm, setSelectedForm] = useState<'all' | 'Form 1' | 'Form 2' | 'Form 3' | 'Form 4'>(() => {
+    if (currentForm && ['Form 1', 'Form 2', 'Form 3', 'Form 4'].includes(currentForm)) {
+      return currentForm as any;
+    }
+    return 'all';
+  });
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCourseId, setSelectedCourseId] = useState<string>(courses[0]?.id || '');
   const [activeTab, setActiveTab] = useState<'theory' | 'practicals' | 'simulation' | 'exams'>('theory');
-  const [selectedFormOrYear, setSelectedFormOrYear] = useState<string>('all');
+  const [selectedFormOrYear, setSelectedFormOrYear] = useState<string>(() => {
+    if (currentForm && ['Form 1', 'Form 2', 'Form 3', 'Form 4'].includes(currentForm)) {
+      return currentForm;
+    }
+    return 'all';
+  });
   const [topicSearchQuery, setTopicSearchQuery] = useState<string>('');
+  const [activeSpeechTopicId, setActiveSpeechTopicId] = useState<string | null>(null);
+
+  const handleToggleSpeech = (topicId: string, text: string) => {
+    if (typeof window === 'undefined' || !window.speechSynthesis) return;
+    if (activeSpeechTopicId === topicId) {
+      window.speechSynthesis.cancel();
+      setActiveSpeechTopicId(null);
+    } else {
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.rate = 0.95;
+      utterance.onend = () => setActiveSpeechTopicId(null);
+      utterance.onerror = () => setActiveSpeechTopicId(null);
+      window.speechSynthesis.speak(utterance);
+      setActiveSpeechTopicId(topicId);
+    }
+  };
+
+  useEffect(() => {
+    if (currentForm) {
+      if (currentForm === 'KCSE Candidate' || currentForm === 'all') {
+        setSelectedForm('all');
+        setSelectedFormOrYear('all');
+      } else if (['Form 1', 'Form 2', 'Form 3', 'Form 4'].includes(currentForm)) {
+        setSelectedForm(currentForm as any);
+        setSelectedFormOrYear(currentForm);
+      }
+    }
+  }, [currentForm]);
 
   // Filter courses
   const filteredCourses = courses.filter((c) => {
@@ -76,58 +121,59 @@ export const SyllabusBrowser: React.FC<SyllabusBrowserProps> = ({
   };
 
   return (
-    <div className="space-y-6 text-slate-100">
+    <div className="space-y-5 sm:space-y-6 text-slate-100">
       {/* Search and Form Filter Bar */}
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-lg flex flex-wrap items-center justify-between gap-4">
+      <div className="bg-slate-900 border border-slate-800 rounded-2xl p-3 sm:p-4 shadow-lg flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         {/* Form Tabs */}
-        <div className="flex items-center gap-1 bg-slate-950 p-1 rounded-xl border border-slate-800 text-xs">
+        <div className="flex items-center gap-1 bg-slate-950 p-1 rounded-xl border border-slate-800 text-xs overflow-x-auto no-scrollbar">
           {(['all', 'Form 1', 'Form 2', 'Form 3', 'Form 4'] as const).map((form) => (
             <button
               key={form}
               onClick={() => {
                 setSelectedForm(form);
                 setSelectedFormOrYear(form);
+                onSelectForm?.(form);
               }}
-              className={`px-3 py-1.5 rounded-lg font-medium transition-colors ${
+              className={`px-3 py-1.5 rounded-lg font-medium whitespace-nowrap transition-colors min-h-[38px] flex items-center ${
                 selectedForm === form
                   ? 'bg-emerald-600 text-white shadow-sm font-semibold'
                   : 'text-slate-400 hover:text-white'
               }`}
             >
-              {form === 'all' ? 'All Form 1–4 Syllabi' : form}
+              {form === 'all' ? 'All Forms' : form}
             </button>
           ))}
         </div>
 
         {/* Search Input */}
-        <div className="relative min-w-[280px] flex-1 max-w-md">
+        <div className="relative w-full sm:w-auto sm:min-w-[240px] flex-1 sm:max-w-md">
           <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search KCSE subjects, Form 1-4 topics, or Paper 3 practicals..."
+            placeholder="Search subjects, topics, practicals..."
             className="w-full bg-slate-950 border border-slate-800 rounded-xl pl-9 pr-4 py-2 text-xs text-white focus:outline-none focus:border-emerald-500"
           />
         </div>
       </div>
 
       {/* High School Category Pills Bar */}
-      <div className="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs">
-        <span className="text-slate-500 text-[11px] uppercase tracking-wider font-mono mr-1 shrink-0">Department:</span>
+      <div className="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs no-scrollbar">
+        <span className="text-slate-500 text-[11px] uppercase tracking-wider font-mono mr-1 shrink-0">Field:</span>
         {[
-          { id: 'all', label: 'All Subjects (Form 1–4)' },
-          { id: 'Sciences', label: 'Sciences (Bio, Chem, Phys)' },
+          { id: 'all', label: 'All Subjects' },
+          { id: 'Sciences', label: 'Sciences' },
           { id: 'Mathematics', label: 'Mathematics' },
-          { id: 'Humanities', label: 'Humanities (History, Geography)' },
-          { id: 'Computing & Tech', label: 'Computer Studies (451)' },
-          { id: 'Applied & Technical', label: 'Agriculture & Applied (443)' },
-          { id: 'Business Studies', label: 'Business Studies (565)' },
+          { id: 'Humanities', label: 'Humanities' },
+          { id: 'Computing & Tech', label: 'Computers' },
+          { id: 'Applied & Technical', label: 'Agriculture' },
+          { id: 'Business Studies', label: 'Business' },
         ].map((cat) => (
           <button
             key={cat.id}
             onClick={() => setSelectedCategory(cat.id)}
-            className={`px-3 py-1.5 rounded-lg whitespace-nowrap shrink-0 transition-colors font-medium border ${
+            className={`px-3 py-1.5 rounded-lg whitespace-nowrap shrink-0 transition-colors font-medium border min-h-[36px] flex items-center ${
               selectedCategory === cat.id
                 ? 'bg-slate-800 border-emerald-500/80 text-emerald-400 shadow-sm font-semibold'
                 : 'bg-slate-900/60 border-slate-800 text-slate-400 hover:text-slate-200 hover:border-slate-700'
@@ -138,10 +184,46 @@ export const SyllabusBrowser: React.FC<SyllabusBrowserProps> = ({
         ))}
       </div>
 
-      {/* Main Course Explorer View (Sidebar + Content Pane) */}
+      {/* Mobile Subject Quick Switcher (Visible on screens < lg) */}
+      <div className="lg:hidden bg-slate-900 border border-slate-800 rounded-2xl p-3 shadow-lg space-y-2">
+        <div className="flex items-center justify-between text-xs">
+          <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+            <BookOpen className="w-3.5 h-3.5 text-emerald-400" />
+            <span>Switch Subject ({filteredCourses.length}):</span>
+          </span>
+          <span className="font-mono text-[10px] text-emerald-400 font-bold">
+            Active: {activeCourse.name}
+          </span>
+        </div>
+        <div className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar">
+          {filteredCourses.map((c) => {
+            const isSelected = c.id === activeCourse.id;
+            return (
+              <button
+                key={c.id}
+                onClick={() => setSelectedCourseId(c.id)}
+                className={`px-3 py-2 rounded-xl text-xs font-semibold whitespace-nowrap shrink-0 transition-all flex items-center gap-1.5 min-h-[42px] border ${
+                  isSelected
+                    ? 'bg-emerald-600 text-white border-emerald-500 shadow-md ring-1 ring-emerald-400/40'
+                    : 'bg-slate-950 text-slate-300 border-slate-800 hover:border-slate-700'
+                }`}
+              >
+                <span>{c.name}</span>
+                <span className={`text-[10px] font-mono px-1 py-0.2 rounded ${
+                  isSelected ? 'bg-emerald-700 text-emerald-100' : 'bg-slate-900 text-slate-400'
+                }`}>
+                  {c.code}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Main Course Explorer View (Sidebar on Desktop + Content Pane) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        {/* Course Catalog Sidebar */}
-        <div className="lg:col-span-4 bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-lg space-y-2 max-h-[780px] overflow-y-auto">
+        {/* Course Catalog Sidebar (Desktop only, mobile uses the top horizontal ribbon) */}
+        <div className="hidden lg:block lg:col-span-4 bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-lg space-y-2 max-h-[780px] overflow-y-auto">
           <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 px-2 py-1 flex items-center justify-between">
             <span>Available Courses ({filteredCourses.length})</span>
             <span className="font-mono text-[10px] text-slate-500">KICD / CUE</span>
@@ -181,10 +263,10 @@ export const SyllabusBrowser: React.FC<SyllabusBrowserProps> = ({
         </div>
 
         {/* Selected Course Main Canvas */}
-        <div className="lg:col-span-8 bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-6">
+        <div className="lg:col-span-8 bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-6 shadow-xl space-y-5 sm:space-y-6">
           {/* Header of Active Subject */}
-          <div className="border-b border-slate-800 pb-5">
-            <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="border-b border-slate-800 pb-4 sm:pb-5">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div>
                 <div className="flex items-center gap-2">
                   <span className="text-xs font-semibold text-emerald-400 font-mono uppercase">
@@ -193,7 +275,7 @@ export const SyllabusBrowser: React.FC<SyllabusBrowserProps> = ({
                   <span className="text-slate-600">·</span>
                   <span className="text-xs font-mono text-slate-400">{activeCourse.code}</span>
                 </div>
-                <h2 className="text-2xl font-bold text-white mt-1">{activeCourse.name}</h2>
+                <h2 className="text-xl sm:text-2xl font-bold text-white mt-1">{activeCourse.name}</h2>
               </div>
 
               <button
@@ -204,64 +286,64 @@ export const SyllabusBrowser: React.FC<SyllabusBrowserProps> = ({
                     activeCourse.level === 'highschool' ? 'High School KCSE' : 'University Undergraduate'
                   )
                 }
-                className="px-4 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white rounded-xl text-xs font-semibold flex items-center gap-2 shadow-lg transition-all"
+                className="px-3.5 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white rounded-xl text-xs font-semibold flex items-center justify-center gap-2 shadow-lg transition-all min-h-[44px]"
               >
                 <Sparkles className="w-4 h-4" />
-                Ask AI Kenya Curriculum Tutor
+                Ask AI
               </button>
             </div>
             <p className="text-xs text-slate-400 mt-2 leading-relaxed">{activeCourse.description}</p>
 
-            {/* 4 Tabs Selector */}
-            <div className="flex items-center gap-2 mt-5 border-t border-slate-800/80 pt-4 text-xs">
+            {/* 4 Tabs Selector (Smooth scrollable on mobile) */}
+            <div className="flex items-center gap-2 mt-4 sm:mt-5 border-t border-slate-800/80 pt-3 sm:pt-4 text-xs overflow-x-auto no-scrollbar pb-1">
               <button
                 onClick={() => setActiveTab('theory')}
-                className={`py-2 px-3.5 rounded-lg font-semibold flex items-center gap-2 transition-colors ${
+                className={`py-2 px-3 sm:px-3.5 rounded-lg font-semibold flex items-center gap-2 transition-colors whitespace-nowrap shrink-0 min-h-[40px] ${
                   activeTab === 'theory'
                     ? 'bg-emerald-600 text-white shadow-sm'
                     : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
                 }`}
               >
                 <BookOpen className="w-3.5 h-3.5" />
-                Theory Syllabus ({activeCourse.topics.length})
+                Notes ({activeCourse.topics.length})
               </button>
 
               <button
                 onClick={() => setActiveTab('practicals')}
-                className={`py-2 px-3.5 rounded-lg font-semibold flex items-center gap-2 transition-colors ${
+                className={`py-2 px-3 sm:px-3.5 rounded-lg font-semibold flex items-center gap-2 transition-colors whitespace-nowrap shrink-0 min-h-[40px] ${
                   activeTab === 'practicals'
                     ? 'bg-emerald-600 text-white shadow-sm'
                     : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
                 }`}
               >
                 <FlaskConical className="w-3.5 h-3.5" />
-                Laboratory Practicals ({activeCourse.practicals.length})
+                Practicals ({activeCourse.practicals.length})
               </button>
 
               {activeCourse.simulationType && (
                 <button
                   onClick={() => setActiveTab('simulation')}
-                  className={`py-2 px-3.5 rounded-lg font-semibold flex items-center gap-2 transition-colors ${
+                  className={`py-2 px-3 sm:px-3.5 rounded-lg font-semibold flex items-center gap-2 transition-colors whitespace-nowrap shrink-0 min-h-[40px] ${
                     activeTab === 'simulation'
                       ? 'bg-emerald-600 text-white shadow-sm'
                       : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
                   }`}
                 >
                   <Activity className="w-3.5 h-3.5" />
-                  Live Simulation
+                  Simulation
                 </button>
               )}
 
               <button
                 onClick={() => setActiveTab('exams')}
-                className={`py-2 px-3.5 rounded-lg font-semibold flex items-center gap-2 transition-colors ${
+                className={`py-2 px-3 sm:px-3.5 rounded-lg font-semibold flex items-center gap-2 transition-colors whitespace-nowrap shrink-0 min-h-[40px] ${
                   activeTab === 'exams'
                     ? 'bg-emerald-600 text-white shadow-sm'
                     : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
                 }`}
               >
                 <Award className="w-3.5 h-3.5" />
-                Past Exams &amp; Tests ({activeCourse.exams.length})
+                Exams ({activeCourse.exams.length})
               </button>
             </div>
           </div>
@@ -341,7 +423,7 @@ export const SyllabusBrowser: React.FC<SyllabusBrowserProps> = ({
                   </div>
 
                   {/* Quick Topics Jump Strip */}
-                  <div className="pt-2 border-t border-slate-800/80 flex items-center gap-1.5 overflow-x-auto text-[11px]">
+                  <div className="pt-2 border-t border-slate-800/80 flex items-center gap-1.5 overflow-x-auto text-[11px] no-scrollbar">
                     <span className="text-slate-500 uppercase tracking-wider font-mono mr-1 shrink-0 flex items-center gap-1">
                       <ListOrdered className="w-3 h-3 text-cyan-400" />
                       Topic Index:
@@ -382,32 +464,56 @@ export const SyllabusBrowser: React.FC<SyllabusBrowserProps> = ({
                         id={topic.id}
                         className="bg-slate-950/70 border border-slate-800 rounded-xl p-5 space-y-4 scroll-mt-24 transition-all hover:border-slate-700"
                       >
-                        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800/80 pb-3">
-                          <div className="flex items-center gap-2.5">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 border-b border-slate-800/80 pb-3">
+                          <div className="flex items-center gap-2.5 min-w-0">
                             <span className="w-7 h-7 rounded-lg bg-emerald-950/80 border border-emerald-500/40 text-emerald-400 font-mono text-xs font-bold flex items-center justify-center shrink-0">
                               {index + 1}
                             </span>
-                            <div>
+                            <div className="min-w-0">
                               <span className="text-[10px] font-mono text-emerald-400 uppercase font-semibold">
                                 {topic.formOrYear} Official Curriculum Unit
                               </span>
-                              <h3 className="text-base font-bold text-white mt-0.5">{topic.title}</h3>
+                              <h3 className="text-sm sm:text-base font-bold text-white mt-0.5 truncate">{topic.title}</h3>
                             </div>
                           </div>
 
-                          <button
-                            onClick={() =>
-                              onOpenAITutor(
-                                activeCourse.name,
-                                topic.title,
-                                activeCourse.level === 'highschool' ? `${topic.formOrYear} KCSE` : `${topic.formOrYear} Undergraduate`
-                              )
-                            }
-                            className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-cyan-300 rounded-lg text-xs font-medium border border-slate-700 flex items-center gap-1.5 shadow-sm transition-colors"
-                          >
-                            <Sparkles className="w-3.5 h-3.5" />
-                            Deep Dive with AI Tutor
-                          </button>
+                          <div className="flex items-center gap-2 self-start sm:self-auto shrink-0 flex-wrap">
+                            <button
+                              onClick={() => handleToggleSpeech(topic.id, `${topic.title}. ${topic.theoryOverview}`)}
+                              className={`px-2.5 py-1.5 rounded-lg text-xs font-medium border flex items-center gap-1.5 transition-colors min-h-[38px] ${
+                                activeSpeechTopicId === topic.id
+                                  ? 'bg-amber-500 text-slate-950 font-bold border-amber-400 animate-pulse'
+                                  : 'bg-slate-900 hover:bg-slate-800 text-slate-300 border-slate-800'
+                              }`}
+                              title="Listen to topic notes read aloud"
+                            >
+                              {activeSpeechTopicId === topic.id ? (
+                                <>
+                                  <VolumeX className="w-3.5 h-3.5" />
+                                  <span>Stop Voice</span>
+                                </>
+                              ) : (
+                                <>
+                                  <Volume2 className="w-3.5 h-3.5 text-cyan-400" />
+                                  <span>Listen</span>
+                                </>
+                              )}
+                            </button>
+
+                            <button
+                              onClick={() =>
+                                onOpenAITutor(
+                                  activeCourse.name,
+                                  topic.title,
+                                  activeCourse.level === 'highschool' ? `${topic.formOrYear} KCSE` : `${topic.formOrYear} Undergraduate`
+                                )
+                              }
+                              className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-cyan-300 rounded-lg text-xs font-medium border border-slate-700 flex items-center gap-1.5 shadow-sm transition-colors min-h-[38px]"
+                            >
+                              <Sparkles className="w-3.5 h-3.5" />
+                              <span>AI Tutor</span>
+                            </button>
+                          </div>
                         </div>
 
                         {/* Subtopics */}
